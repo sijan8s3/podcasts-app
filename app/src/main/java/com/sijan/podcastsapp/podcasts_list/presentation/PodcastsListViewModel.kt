@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class PodcastsListViewModel(
     private val podcastDataSource: PodcastDataSource
-):ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(PodcastsListState())
     val state = _state
@@ -32,15 +32,17 @@ class PodcastsListViewModel(
     val events = _events.receiveAsFlow()
 
     fun onAction(action: PodcastsListAction) {
-        when(action) {
+        when (action) {
             is PodcastsListAction.OnPodcastClicked -> {
                 _state.value = _state.value.copy(
                     selectedPodcast = action.podcast
                 )
             }
+
             is PodcastsListAction.OnFavouriteToggled -> {
 
             }
+
             PodcastsListAction.OnRetryClicked -> loadPodcasts()
             else -> Unit
         }
@@ -56,10 +58,11 @@ class PodcastsListViewModel(
                 _state.update {
                     it.copy(
                         podcasts = podcasts,
-                        isLoading = false
+                        isLoading = false,
+                        errorMessage = null
                     )
                 }
-                }.onError { error ->
+            }.onError { error ->
                 _state.update {
                     it.copy(
                         errorMessage = error,
