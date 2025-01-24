@@ -8,4 +8,6 @@ data class PodcastsListState(
     val podcasts: List<Podcast> = emptyList(),
     val selectedPodcast: Podcast? = null,
     val errorMessage: NetworkError? = null,
+    val favouritePodcasts: Set<String> = emptySet()
+
 )

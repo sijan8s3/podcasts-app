@@ -138,6 +138,7 @@ fun PodcastsListScreen(
                             }
                         ),
                     podcast = podcast,
+                    isFavourite = state.favouritePodcasts.contains(podcast.id)
                 )
 
             }

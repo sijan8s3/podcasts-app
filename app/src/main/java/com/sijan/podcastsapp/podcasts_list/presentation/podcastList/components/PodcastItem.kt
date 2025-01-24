@@ -30,6 +30,7 @@ import com.sijan.podcastsapp.ui.theme.PodcastsAppTheme
 fun PodcastItem(
     modifier: Modifier = Modifier,
     podcast: Podcast,
+    isFavourite: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -69,6 +70,12 @@ fun PodcastItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontStyle = FontStyle.Italic
+                    )
+                }
+                if (isFavourite){
+                    Text(
+                        text = "Favourited",
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
