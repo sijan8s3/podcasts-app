@@ -1,5 +1,6 @@
 package com.sijan.podcastsapp.podcasts_list.presentation.podcastList.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,10 +15,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.sijan.podcastsapp.R
 import com.sijan.podcastsapp.podcasts_list.domain.Podcast
 import com.sijan.podcastsapp.ui.theme.PodcastsAppTheme
 
@@ -30,23 +35,31 @@ fun PodcastItem(
         modifier = modifier
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
         ) {
             AsyncImage(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(20.dp)),
                 model = podcast.thumbnail,
-                contentDescription = podcast.title
-            )
+                placeholder = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = podcast.title,
+                contentScale = ContentScale.Crop,
+                onError = {
+                    Log.e("AsyncImage", "Error loading image: ${it.result.throwable.message}")
+                }
+                )
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = podcast.title,
                     style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                )
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    )
 
                 podcast.publisher?.let { publisher ->
                     Text(
@@ -54,12 +67,12 @@ fun PodcastItem(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         fontStyle = FontStyle.Italic
                     )
                 }
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
 
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
