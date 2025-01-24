@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Text
+import androidx.navigation.compose.rememberNavController
 import com.sijan.podcastsapp.ui.theme.PodcastsAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +14,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PodcastsAppTheme {
+                val navController = rememberNavController()
 
+                AppNavigation(
+                    navController = navController,
+                )
             }
         }
     }
