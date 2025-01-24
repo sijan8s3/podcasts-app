@@ -36,6 +36,9 @@ fun AppNavigation(
 
                 PodcastsListScreenRoot(
                     viewModel = viewModel,
+                    onPodcastClicked = { podcast ->
+                        //todo: navigate to podcast details screen
+                    }
                 )
             }
 
