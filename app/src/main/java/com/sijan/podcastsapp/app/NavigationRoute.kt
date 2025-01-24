@@ -10,6 +10,6 @@ sealed interface NavigationRoute{
     data object PodcastList: NavigationRoute
 
     @Serializable
-    data class PodcastDetail(val podcastId: Int): NavigationRoute
+    data class PodcastDetails(val podcastId: String): NavigationRoute
 
 }
