@@ -1,6 +1,5 @@
 package com.sijan.podcastsapp.core.domain.utils
 
-import com.sijan.podcastsapp.core.domain.utils.Error
 
 enum class NetworkError: Error {
     REQUEST_TIMEOUT,
