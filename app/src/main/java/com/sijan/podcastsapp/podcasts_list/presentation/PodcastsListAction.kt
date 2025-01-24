@@ -7,4 +7,5 @@ sealed interface PodcastsListAction {
     data object OnBackClicked : PodcastsListAction
     data object OnRetryClicked : PodcastsListAction
     data class OnFavouriteToggled(val podcastId: String) : PodcastsListAction
+    data object OnNextPageRequested : PodcastsListAction
 }

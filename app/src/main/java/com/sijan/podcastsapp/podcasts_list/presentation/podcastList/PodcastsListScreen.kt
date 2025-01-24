@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,13 +20,16 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sijan.podcastsapp.core.domain.utils.NetworkError
 import com.sijan.podcastsapp.core.presentation.utils.ObserveAsEvents
 import com.sijan.podcastsapp.core.presentation.utils.toString
 import com.sijan.podcastsapp.podcasts_list.domain.Podcast
@@ -33,6 +38,7 @@ import com.sijan.podcastsapp.podcasts_list.presentation.PodcastsListEvent
 import com.sijan.podcastsapp.podcasts_list.presentation.PodcastsListState
 import com.sijan.podcastsapp.podcasts_list.presentation.PodcastsListViewModel
 import com.sijan.podcastsapp.podcasts_list.presentation.podcastList.components.PodcastItem
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun PodcastsListScreenRoot(
@@ -81,7 +87,6 @@ fun PodcastsListScreen(
     onAction: (PodcastsListAction) -> Unit
 ) {
     val podcastListState = rememberLazyListState()
-    val context = LocalContext.current
 
 
     Column(modifier = modifier) {
@@ -93,35 +98,16 @@ fun PodcastsListScreen(
             modifier = Modifier.padding(16.dp),
         )
 
-        // Loading indicator
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-
         // Error message and retry button
         if (state.errorMessage != null && !state.isLoading) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = state.errorMessage.toString(context = context))
-                Button(onClick = {
-                    onAction(PodcastsListAction.OnRetryClicked)
-                }) {
-                    Text(text = "Retry")
-                }
-            }
+            ErrorView(state.errorMessage, onAction)
         }
 
         LazyColumn(
             state = podcastListState,
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(
                 items = state.podcasts,
@@ -143,10 +129,53 @@ fun PodcastsListScreen(
 
             }
 
+            // Loading indicator
+            if (state.isLoading) {
+                item { LoadingIndicator() }
+            }
+
+            item {
+                LaunchedEffect(Unit) {
+                    snapshotFlow { podcastListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+                        .distinctUntilChanged()
+                        .collect { lastIndex ->
+                            if (lastIndex == state.podcasts.size - 1) {
+                                onAction(PodcastsListAction.OnNextPageRequested)
+                            }
+                        }
+                }
+            }
+
 
         }
+
 
     }
 
 
+}
+
+@Composable
+fun ErrorView(errorMessage: NetworkError, onAction: (PodcastsListAction) -> Unit) {
+    val context = LocalContext.current
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = errorMessage.toString(context))
+        Button(onClick = { onAction(PodcastsListAction.OnRetryClicked) }) {
+            Text(text = "Retry")
+        }
+    }
+}
+
+@Composable
+fun LoadingIndicator() {
+    Box(
+        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(modifier = Modifier.size(30.dp))
+    }
 }

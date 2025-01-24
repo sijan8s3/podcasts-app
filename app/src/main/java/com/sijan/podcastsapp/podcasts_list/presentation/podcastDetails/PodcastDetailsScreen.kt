@@ -42,20 +42,24 @@ fun PodcastDetailsScreenRoot(
     PodcastDetailsScreen(
         modifier = Modifier.systemBarsPadding(),
         state = state,
-        onAction = viewModel::onAction,
-        onNavigateBack = {
-            onNavigateBack()
-        }
+        onAction = { action ->
+            when (action) {
+                is PodcastsListAction.OnBackClicked -> {
+                    onNavigateBack()
+                }
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        },
+
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PodcastDetailsScreen(
     modifier: Modifier = Modifier,
     state: PodcastsListState,
     onAction: (PodcastsListAction) -> Unit,
-    onNavigateBack: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -63,7 +67,7 @@ fun PodcastDetailsScreen(
             .padding(8.dp),
     ) {
         HeaderBackIcon(onClickBack = {
-            onNavigateBack()
+            onAction(PodcastsListAction.OnBackClicked)
         })
         state.selectedPodcast?.let { podcast ->
             LazyColumn(
