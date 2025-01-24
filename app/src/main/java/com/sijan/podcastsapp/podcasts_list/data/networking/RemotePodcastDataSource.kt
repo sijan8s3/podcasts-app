@@ -17,10 +17,11 @@ import io.ktor.client.request.parameter
 class RemotePodcastDataSource(
     private val httpClient: HttpClient
 ): PodcastDataSource {
-    override suspend fun getPodcastList(page: Int): Result<PodcastList, NetworkError> {
+    override suspend fun getPodcastList(page: Int, pageSize: Int): Result<PodcastList, NetworkError> {
         return safeApiCall<PodcastListDto> {
             httpClient.get(urlString = constructUrl(url = "/best_podcasts")){
                 parameter("page", page)
+                parameter("page_size", pageSize)
             }
         }.map { response ->
             response.toPodcastList()
