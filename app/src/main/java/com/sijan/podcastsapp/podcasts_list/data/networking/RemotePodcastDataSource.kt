@@ -9,17 +9,20 @@ import com.sijan.podcastsapp.podcasts_list.data.mappers.toPodcastList
 import com.sijan.podcastsapp.podcasts_list.domain.Podcast
 import com.sijan.podcastsapp.podcasts_list.data.networking.dto.PodcastListDto
 import com.sijan.podcastsapp.podcasts_list.domain.PodcastDataSource
+import com.sijan.podcastsapp.podcasts_list.domain.PodcastList
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 
 class RemotePodcastDataSource(
     private val httpClient: HttpClient
 ): PodcastDataSource {
-    override suspend fun getPodcastList(): Result<List<Podcast>, NetworkError> {
+    override suspend fun getPodcastList(page: Int, pageSize: Int): Result<PodcastList, NetworkError> {
         return safeApiCall<PodcastListDto> {
-            httpClient.get(
-                urlString = constructUrl(url = "/best_podcasts")
-            )
+            httpClient.get(urlString = constructUrl(url = "/best_podcasts")){
+                parameter("page", page)
+                parameter("page_size", pageSize)
+            }
         }.map { response ->
             response.toPodcastList()
         }

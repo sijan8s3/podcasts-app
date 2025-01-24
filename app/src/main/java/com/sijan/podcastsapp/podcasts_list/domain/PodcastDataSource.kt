@@ -4,5 +4,5 @@ import com.sijan.podcastsapp.core.domain.utils.NetworkError
 import com.sijan.podcastsapp.core.domain.utils.Result
 
 interface PodcastDataSource {
-    suspend fun getPodcastList(): Result<List<Podcast>, NetworkError>
+    suspend fun getPodcastList(page: Int, pageSize: Int = 10): Result<PodcastList, NetworkError>
 }

@@ -1,5 +1,15 @@
 package com.sijan.podcastsapp.podcasts_list.domain
 
+data class PodcastList(
+    val podcasts: List<Podcast>,
+    val hasNextPage: Boolean,
+    val hasPreviousPage: Boolean,
+    val nextPageNumber: Int,
+    val pageNumber: Int,
+    val previousPageNumber: Int,
+    val total: Int
+)
+
 data class Podcast(
     val id: String,
     val title: String,
